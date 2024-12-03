@@ -144,6 +144,58 @@ export default class Game {
         return { merged: newLine, hasMoved };
     }
 
+    handleInput() {
+        window.addEventListener('keydown', (e) => {
+            if (this.moving) return;
+
+            const directions = {
+                ArrowUp: 'up',
+                ArrowDown: 'down',
+                ArrowLeft: 'left',
+                ArrowRight: 'right',
+            };
+
+            if (directions[e.key]) {
+                this.move(directions[e.key]);
+            }
+        });
+
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+
+        this.canvas.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        });
+
+        this.canvas.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].clientX;
+            touchEndY = e.changedTouches[0].clientY;
+
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+
+            if (this.moving) return;
+
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                if (deltaX > 0) {
+                    this.move('right');
+                } else {
+                    this.move('left');
+                }
+            } else {
+                if (deltaY > 0) {
+                    this.move('down');
+                } else {
+                    this.move('up');
+                }
+            }
+        });
+    }
+
+
     checkGameOver() {
         for (let r = 0; r < this.size; r++) {
             for (let c = 0; c < this.size; c++) {
